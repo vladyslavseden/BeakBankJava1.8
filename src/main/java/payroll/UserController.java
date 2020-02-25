@@ -1,11 +1,14 @@
 package payroll;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,8 +40,11 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    User newUser(@RequestBody User newUser){
-        return repo.save(newUser);
+    ResponseEntity<?> newUser(@RequestBody User newUser) throws URISyntaxException {
+        EntityModel<User> entityModel = assembler.toModel(repo.save(newUser));
+        return ResponseEntity.
+                created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
     //Single item
     @GetMapping("/user/{id}")
@@ -50,26 +56,29 @@ public class UserController {
 
 
     @PutMapping("/user/{id}")
-    User userReplace(@RequestBody User newUser, @PathVariable Long id){
-        return repo.findById(id)
+    ResponseEntity<?> userReplace(@RequestBody User newUser, @PathVariable Long id) throws URISyntaxException{
+        User updatedUser = repo.findById(id)
                 .map(user -> {
-                    user.setFirstName(newUser.getFirstName());
-                    user.setLastName(newUser.getLastName());
-                    user.setEmail(newUser.getEmail());
+                    user.setName(newUser.getName());
                     user.setRole(newUser.getRole());
-                    user.setDescription(newUser.getDescription());
                     return repo.save(user);
                 })
-                .orElseGet(() ->{
+                .orElseGet(() -> {
                     newUser.setId(id);
                     return repo.save(newUser);
-
                 });
+        EntityModel<User> entityModel = assembler.toModel(updatedUser);
+
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
     @DeleteMapping("/user/{id}")
-    void deleteUser(@PathVariable Long id){
+   ResponseEntity<?> deletUser(@PathVariable Long id){
         repo.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
+
 
 
 }
