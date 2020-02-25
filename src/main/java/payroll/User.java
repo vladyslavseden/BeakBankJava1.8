@@ -24,4 +24,13 @@ class User {
         this.role        = role;
         this.description = description;
     }
+    public String getName(){
+        return this.firstName + " " + this.lastName;
+    }
+    public void setName(String name){
+        String[] parts = name.split(" ");
+        this.firstName = parts[0];
+        this.lastName = parts[1];
+
+    }
 }
