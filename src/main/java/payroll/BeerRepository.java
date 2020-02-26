@@ -1,6 +1,7 @@
 package payroll;
 
-import org.hibernate.metamodel.model.convert.spi.JpaAttributeConverter;
 
-public interface BeerRepository extends JpaAttributeConverter<Beer, Long> {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BeerRepository extends JpaRepository<Beer, Long> {
 }

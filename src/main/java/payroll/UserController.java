@@ -74,7 +74,7 @@ public class UserController {
                 .body(entityModel);
     }
     @DeleteMapping("/user/{id}")
-   ResponseEntity<?> deletUser(@PathVariable Long id){
+   ResponseEntity<?> deleteUser(@PathVariable Long id){
         repo.deleteById(id);
         return ResponseEntity.noContent().build();
     }
