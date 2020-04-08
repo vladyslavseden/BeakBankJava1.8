@@ -14,10 +14,20 @@ import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
+/*
+* here is following hierarchy:
+*
+*  BeerControler
+*   --BeerController
+*
+* remove extra class
+*
+* */
 @RestController
 class BeerController {
 
+    //    can we do just @Autowired here and remove constructor below?
+    // rename brepo
     private final BeerRepository brepo;
     private final BeerModelAssembler assembler;
 
@@ -28,6 +38,7 @@ class BeerController {
         this.assembler = assembler;
     }
 
+    // method rename to more readable
     @GetMapping("/beers")
     CollectionModel<EntityModel<Beer>> all() {
 
@@ -39,6 +50,7 @@ class BeerController {
                 linkTo(methodOn(BeerController.class).all()).withSelfRel());
     }
 
+    // method rename to more readable
     @GetMapping("/beers/{id}")
     EntityModel<Beer> one(@PathVariable Long id) {
         Beer beer = brepo.findById(id)
@@ -47,6 +59,7 @@ class BeerController {
         return assembler.toModel(beer);
     }
 
+    // method rename to more readable
     @PostMapping("/beers")
     ResponseEntity<EntityModel<Beer>> newBeer(@RequestBody Beer beer) {
 
@@ -57,6 +70,13 @@ class BeerController {
                 .created(linkTo(methodOn(BeerController.class).one(newBeer.getId())).toUri())
                 .body(assembler.toModel(newBeer));
     }
+
+    /* see REST best practices, e.g. use nouns etc.
+    specific points: https://medium.com/@mwaysolutions/10-best-practices-for-better-restful-api-cbe81b06f291
+
+    global vision: https://martinfowler.com/articles/richardsonMaturityModel.html
+    */
+
     @DeleteMapping("/beer/{id}/cancel")
     ResponseEntity<RepresentationModel> cancel(@PathVariable Long id) {
 
@@ -71,6 +91,8 @@ class BeerController {
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .body(new VndErrors.VndError("Method not allowed", "You can't cancel an beer order that is in the " + beer.getRate() + " status"));
     }
+
+    /*the same as above*/
     @PutMapping("/beer/{id}/complete")
     ResponseEntity<RepresentationModel> complete(@PathVariable Long id) {
 
