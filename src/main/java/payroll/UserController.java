@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController {
 
+    //    can we do just @Autowired here and remove constructor below?
     private final UserRepository repo;
     private final UserResourceAssembler assembler;
 
